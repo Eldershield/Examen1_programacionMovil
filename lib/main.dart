@@ -1,22 +1,26 @@
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Universidad App',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.grey,
       ),
-      home: MainMenu(),
+      home: const MainMenu(),
     );
   }
 }
 
 class MainMenu extends StatelessWidget {
+  const MainMenu({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,7 +35,7 @@ class MainMenu extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => NewsSpace()),
+                MaterialPageRoute(builder: (context) => const NewsSpace()),
               );
             },
           ),
@@ -77,11 +81,14 @@ class MainMenu extends StatelessWidget {
 }
 
 class NewsSpace extends StatelessWidget {
+  const NewsSpace({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Noticias'),
+        backgroundColor: Colors.blue,
       ),
       body: ListView(
         children: [
@@ -104,7 +111,7 @@ class NewsCard extends StatelessWidget {
   final String description;
   final String imageUrl;
 
-  NewsCard(this.title, this.description, this.imageUrl);
+  NewsCard(this.title, this.description, this.imageUrl, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -124,27 +131,176 @@ class NewsCard extends StatelessWidget {
   }
 }
 
-class TaskList extends StatelessWidget {
+class TaskList extends StatefulWidget {
+  @override
+  _TaskListState createState() => _TaskListState();
+}
+
+class _TaskListState extends State<TaskList> {
+  List<TaskItem> tasks = [
+    TaskItem('Ejemplo de Tarea', 'Descripción de la tarea 1'),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Lista de Tareas'),
-      ),
-      body: ListView(
-        children: [
-          TaskItem('Tarea 1'),
-          TaskItem('Tarea 2'),
+        backgroundColor: Colors.orange,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: () {
+              _deleteTasks(context);
+            },
+          ),
         ],
       ),
+      body: ListView.builder(
+        itemCount: tasks.length,
+        itemBuilder: (context, index) {
+          return Dismissible(
+            key: Key(tasks[index].taskName),
+            onDismissed: (direction) {
+              setState(() {
+                tasks.removeAt(index);
+              });
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text("Tarea eliminada"),
+              ));
+            },
+            background: Container(
+              color: Colors.red,
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.only(right: 20.0),
+              child: const Icon(Icons.delete, color: Colors.white),
+            ),
+            child: tasks[index],
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _addTask(context);
+        },
+        child: const Icon(Icons.add),
+      ),
     );
+  }
+
+  void _addTask(BuildContext context) async {
+    final result = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String newTaskTitle = '';
+        String newTaskDescription = '';
+
+        return AlertDialog(
+          title: const Text('Añadir Nueva Tarea'),
+          content: Column(
+            children: [
+              TextField(
+                decoration: const InputDecoration(labelText: 'Título'),
+                onChanged: (value) {
+                  newTaskTitle = value;
+                },
+              ),
+              TextField(
+                decoration: const InputDecoration(labelText: 'Descripción'),
+                onChanged: (value) {
+                  newTaskDescription = value;
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(null);
+              },
+              child: const Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(
+                    {'title': newTaskTitle, 'description': newTaskDescription});
+              },
+              child: const Text('Agregar'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (result != null && result['title'] != null) {
+      setState(() {
+        tasks.add(TaskItem(result['title'], result['description']));
+      });
+    }
+  }
+
+  void _deleteTasks(BuildContext context) async {
+    final selectedTasks = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        List<bool> selectedList = List.generate(tasks.length, (index) => false);
+
+        return AlertDialog(
+          title: const Text('Eliminar Tareas'),
+          content: Column(
+            children: List.generate(
+              tasks.length,
+              (index) => CheckboxListTile(
+                title: Text(tasks[index].taskName),
+                value: selectedList[index],
+                onChanged: (value) {
+                  setState(() {
+                    selectedList[index] = value ?? false;
+                  });
+                },
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(null);
+              },
+              child: const Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                List<TaskItem> tasksToDelete = [];
+                for (int i = 0; i < tasks.length; i++) {
+                  if (selectedList[i]) {
+                    tasksToDelete.add(tasks[i]);
+                  }
+                }
+                Navigator.of(context).pop(tasksToDelete);
+              },
+              child: const Text('Eliminar'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (selectedTasks != null && selectedTasks.isNotEmpty) {
+      setState(() {
+        tasks.removeWhere((task) => selectedTasks.contains(task));
+      });
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Tareas eliminadas"),
+      ));
+    }
   }
 }
 
 class TaskItem extends StatefulWidget {
   final String taskName;
+  final String taskDescription;
 
-  TaskItem(this.taskName);
+  TaskItem(this.taskName, this.taskDescription);
 
   @override
   _TaskItemState createState() => _TaskItemState();
@@ -157,6 +313,7 @@ class _TaskItemState extends State<TaskItem> {
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(widget.taskName),
+      subtitle: Text(widget.taskDescription),
       onTap: () {
         setState(() {
           isCompleted = !isCompleted;
@@ -166,6 +323,7 @@ class _TaskItemState extends State<TaskItem> {
         isCompleted ? Icons.check_circle : Icons.radio_button_unchecked,
         color: isCompleted ? Colors.green : null,
       ),
+      leading: const Icon(Icons.work),
     );
   }
 }
@@ -187,6 +345,7 @@ class _CurrencyConverterState extends State<CurrencyConverter> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Cambio de Monedas'),
+        backgroundColor: Colors.green,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -243,6 +402,7 @@ class PodcastPlayer extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Podcast'),
+        backgroundColor: Colors.purple,
       ),
       body: Center(
         child: Stack(

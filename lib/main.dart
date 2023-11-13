@@ -25,6 +25,7 @@ class MainMenu extends StatelessWidget {
       body: ListView(
         children: [
           ListTile(
+            leading: const Icon(Icons.article),
             title: const Text('Noticias'),
             onTap: () {
               Navigator.push(
@@ -33,7 +34,9 @@ class MainMenu extends StatelessWidget {
               );
             },
           ),
+          const Divider(),
           ListTile(
+            leading: const Icon(Icons.format_list_bulleted),
             title: const Text('Lista de Tareas'),
             onTap: () {
               Navigator.push(
@@ -42,7 +45,9 @@ class MainMenu extends StatelessWidget {
               );
             },
           ),
+          const Divider(),
           ListTile(
+            leading: const Icon(Icons.attach_money),
             title: const Text('Cambio de Monedas'),
             onTap: () {
               Navigator.push(
@@ -52,7 +57,9 @@ class MainMenu extends StatelessWidget {
               );
             },
           ),
+          const Divider(),
           ListTile(
+            leading: const Icon(Icons.music_note),
             title: const Text('Podcast'),
             onTap: () {
               Navigator.push(
@@ -61,6 +68,7 @@ class MainMenu extends StatelessWidget {
               );
             },
           ),
+          const Divider(),
         ],
       ),
     );
@@ -72,13 +80,16 @@ class NewsSpace extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Espacio de Noticias'),
+        title: const Text('Noticias'),
       ),
       body: ListView(
         children: [
-          NewsCard('Noticia 1', 'Descripción de la noticia 1', 'imagen1.jpg'),
-          NewsCard('Título de la Noticia 2', 'Descripción de la noticia 2', ''),
-          // Agrega más noticias según sea necesario
+          NewsCard('Noticia 1', 'Descripción de la noticia 1',
+              'assets/images/chocque.jpg'),
+          NewsCard(
+              'Aviso Institucional',
+              'Les informamos que, debido a los recientes pronósticos de clima que avizoran una mejora de condiciones para la zona, según reporte de COPECO, se reactivan las actividades académicas y administrativas presenciales el día de mañana lunes 6 de noviembre en la ciudad de San Pedro Sula. \n\nFavor estar atentos a nuestros canales oficiales de comunicación para actualización sobre las disposiciones institucionales. \nAgradecemos su comprensión.',
+              'assets/images/aviso_institucional.jpg'),
         ],
       ),
     );
@@ -98,9 +109,7 @@ class NewsCard extends StatelessWidget {
       child: Column(
         children: [
           Image.asset(
-            'lib/assets/chocque.jpg',
-            height: 200,
-            fit: BoxFit.cover,
+            '$imageUrl',
           ),
           ListTile(
             title: Text(title),
@@ -129,15 +138,31 @@ class TaskList extends StatelessWidget {
   }
 }
 
-class TaskItem extends StatelessWidget {
+class TaskItem extends StatefulWidget {
   final String taskName;
 
   TaskItem(this.taskName);
 
   @override
+  _TaskItemState createState() => _TaskItemState();
+}
+
+class _TaskItemState extends State<TaskItem> {
+  bool isCompleted = false;
+
+  @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(taskName),
+      title: Text(widget.taskName),
+      onTap: () {
+        setState(() {
+          isCompleted = !isCompleted;
+        });
+      },
+      trailing: Icon(
+        isCompleted ? Icons.check_circle : Icons.radio_button_unchecked,
+        color: isCompleted ? Colors.green : null,
+      ),
     );
   }
 }

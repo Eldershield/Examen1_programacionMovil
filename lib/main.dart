@@ -1,3 +1,4 @@
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
@@ -84,8 +85,10 @@ class NewsSpace extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          NewsCard('Noticia 1', 'Descripción de la noticia 1',
-              'assets/images/chocque.jpg'),
+          NewsCard(
+              'CIERRE DE CAMPAÑA!',
+              'A PRONTO LLEGA EL DÍA 💫📢\n\nNos encontramos cerca del cierre de campaña de las Elecciones Estudiantiles periodo 2024❤️\n\nApoya a los líderes de tu carrera.🫡🙌Por que recuerda:\n"Un Líder qué produce otros líderes, multiplica sus influencias"\nJohn Maxwell.\n\nTU VOTO CUENTA ✨🚩',
+              'assets/images/campana.png'),
           NewsCard(
               'Aviso Institucional',
               'Les informamos que, debido a los recientes pronósticos de clima que avizoran una mejora de condiciones para la zona, según reporte de COPECO, se reactivan las actividades académicas y administrativas presenciales el día de mañana lunes 6 de noviembre en la ciudad de San Pedro Sula. \n\nFavor estar atentos a nuestros canales oficiales de comunicación para actualización sobre las disposiciones institucionales. \nAgradecemos su comprensión.',
@@ -241,12 +244,76 @@ class PodcastPlayer extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Podcast'),
       ),
-      body: const Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.play_circle_fill, size: 120.0),
-          Text('titulo de podcast'),
-        ],
+      body: Center(
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Positioned(
+              top: 0,
+              child: Image.asset(
+                'assets/images/duolingo.png',
+                width: 400.0,
+                height: 400.0,
+              ),
+            ),
+            Container(
+              color: Colors.black.withOpacity(0.1),
+              width: double.infinity,
+              child: const Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(height: 140),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.shuffle,
+                        size: 32.0,
+                      ),
+                      Icon(
+                        Icons.skip_previous,
+                        size: 36.0,
+                      ),
+                      // Icono de reproducción
+                      Icon(
+                        Icons.play_circle_fill,
+                        size: 100.0,
+                      ),
+                      // Icono de avance rápido (adelante)
+                      Icon(
+                        Icons.skip_next,
+                        size: 36.0,
+                      ),
+                      Icon(
+                        Icons.repeat,
+                        size: 32.0,
+                      ),
+                    ],
+                  ),
+                  // Texto de la descripción
+                  Text(
+                    "Relatos en inglés con Duolingo",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.black, // Color del texto
+                      fontSize: 24.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 30),
+                  Text(
+                    "Mejora tu inglés y tu conocimiento del mundo angloparlante gracias a fascinantes historias de la vida real, narradas en un inglés fácil de entender y con comentarios en español para ayudarte con el contexto.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.black, // Color del texto
+                      fontSize: 12.0,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
